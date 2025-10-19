@@ -2,7 +2,7 @@ export default function Header({ dark = false, onToggleDark }) {
   return (
     <header className="w-full border-b backdrop-blur" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
       <div className="mx-auto max-w-3xl px-4 py-4 flex items-center justify-between">
-        <img src="/ico.png" alt="Mind Guard" className="w-[32px]" />
+        <img src={`${import.meta.env.BASE_URL}ico.png`} alt="Mind Guard" className="w-[32px]" />
         <h1 className="text-xl font-bold tracking-tight ml-auto p-1" style={{ color: "var(--text-primary)" }}>
           مایند گارد
         </h1>
