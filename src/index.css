@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Vazirmatn, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Theme tokens */
+:root {
+  --bg-primary: #f8fafc; /* slate-50 */
+  --text-primary: #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --text-muted: #64748b; /* slate-500 */
+  --surface: #ffffff; /* white */
+  --surface-secondary: #f1f5f9; /* slate-100 */
+  --ring: #e2e8f0; /* slate-200 */
+  --ring-secondary: #cbd5e1; /* slate-300 */
+  --accent: #22d3ee; /* cyan-300 */
+  --accent-contrast: #0f172a; /* slate-900 */
+  --accent-hover: #06b6d4; /* cyan-500 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --danger: #ef4444; /* red-500 */
+  --chart-primary: #0ea5e9; /* sky-500 */
+  --chart-secondary: #8b5cf6; /* violet-500 */
+}
+
+.dark {
+  --bg-primary: #0f172a; /* slate-900 */
+  --text-primary: #f1f5f9; /* slate-100 */
+  --text-secondary: #cbd5e1; /* slate-300 */
+  --text-muted: #94a3b8; /* slate-400 */
+  --surface: #1e293b; /* slate-800 */
+  --surface-secondary: #334155; /* slate-700 */
+  --ring: #334155; /* slate-700 */
+  --ring-secondary: #475569; /* slate-600 */
+  --accent: #22d3ee; /* cyan-300 */
+  --accent-contrast: #0f172a; /* slate-900 */
+  --accent-hover: #06b6d4; /* cyan-500 */
+  --success: #10b981; /* emerald-500 */
+  --warning: #f59e0b; /* amber-500 */
+  --danger: #ef4444; /* red-500 */
+  --chart-primary: #0ea5e9; /* sky-500 */
+  --chart-secondary: #8b5cf6; /* violet-500 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Ensure RTL base direction for Tailwind utilities that rely on logical props */
+html[dir="rtl"] body {
+  direction: rtl;
+}
+
+/* Smooth theme transitions (respect reduced motion) */
+@media (prefers-reduced-motion: no-preference) {
+  html, body, #root, * {
+    transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease, transform 300ms ease, opacity 300ms ease;
+  }
+}
+
+/* Enhanced animations and interactions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in-scale {
+  animation: fadeInScale 0.4s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Card animations */
+.card-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.card-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Smooth focus states */
+.focus-smooth:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+/* Mobile and touch improvements */
+@media (max-width: 768px) {
+  .hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .hover-lift:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Touch-friendly button sizing */
+@media (max-width: 640px) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Better spacing for mobile */
+@media (max-width: 640px) {
+  .grid {
+    gap: 1rem;
+  }
+}
+
+/* Improved scroll behavior for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Base backgrounds pulling from tokens */
+body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--surface-secondary) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+/* Subtle background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 20% 50%, rgba(34, 211, 238, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
