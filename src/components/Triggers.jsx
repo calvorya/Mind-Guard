@@ -21,7 +21,7 @@ export default function Triggers() {
   }
 
   return (
-    <div className="rounded-2xl shadow-sm ring-1 p-5" style={{backgroundColor:'var(--surface)', borderColor:'var(--ring)'}}>
+    <div className="rounded-2xl shadow-sm ring-1 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{backgroundColor:'var(--surface)', borderColor:'var(--ring)'}}>
       <div className="text-sm mb-2" style={{color:'var(--text-secondary)'}}>تریگرها</div>
       <div className="flex gap-2">
         <input value={text} onChange={e => setText(e.target.value)} className="flex-1 rounded-lg border px-3 py-2 focus:outline-none focus:ring-2" style={{backgroundColor:'var(--surface-secondary)', borderColor:'var(--ring-secondary)', color:'var(--text-primary)'}} placeholder="مثل: تنهایی، خستگی، استرس" />

@@ -20,10 +20,10 @@ export default function CounterCard({ title, value }) {
   }, [value])
 
   return (
-    <div className="rounded-2xl shadow-sm ring-1 p-6 relative overflow-hidden focus-smooth transition-all duration-300" style={{backgroundColor:'var(--surface)', borderColor:'var(--ring)'}}>
+    <div className="rounded-2xl shadow-sm ring-1 p-6 relative overflow-hidden focus-smooth transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{backgroundColor:'var(--surface)', borderColor:'var(--ring)'}}>
       <div className="absolute -left-10 -top-10 w-24 h-24 rounded-full transition-all duration-500" style={{backgroundColor:'var(--surface-secondary)'}} />
       <div className="text-sm mb-1 transition-colors duration-200" style={{color:'var(--text-muted)'}}>{title}</div>
-      <div className="text-5xl font-extrabold tracking-tight transition-all duration-300 will-change-transform hover:scale-110" style={{color:'var(--text-primary)'}}>
+      <div className="text-5xl font-extrabold tracking-tight transition-all duration-300 will-change-transform" style={{color:'var(--text-primary)'}}>
         {display}
       </div>
     </div>

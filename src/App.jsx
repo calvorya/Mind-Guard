@@ -190,11 +190,7 @@ export default function App() {
       />
       <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex justify-center mb-4">
-          <div
-            className="backdrop-blur-md rounded-xl px-6 py-3 shadow animate-fade-in-scale max-w-md w-full text-center"
-          >
-              {motivation}
-          </div>
+          <div className="backdrop-blur-md rounded-xl px-6 py-3 shadow animate-fade-in-scale max-w-md w-full text-center">{motivation}</div>
         </div>
         <div className="mx-auto w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 animate-fade-in-up">
           <StatsCard title="روزهای بدون بازگشت" value={daysClean} subtitle={`آخرین بازگشت: ${getJalaliDateString(lastRelapse)}`} />
@@ -204,7 +200,7 @@ export default function App() {
           <div className="md:col-span-2">
             <Actions onAdd={() => setEvents(addEvent({ type: "relapse" }))} onUndo={() => setEvents(removeLastEvent())} />
           </div>
-          <div className="rounded-2xl shadow-sm ring-1 p-5" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+          <div className="rounded-2xl shadow-sm ring-1 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
             <div className="flex items-center justify-between">
               <div className="text-sm" style={{ color: "var(--text-muted)" }}>
                 ۷ روز اخیر (شمسی)
@@ -216,7 +212,7 @@ export default function App() {
             <BarChart data={last7.map((d) => d.count)} labels={weekLabels} color={theme.name === "danger" ? "var(--danger)" : theme.name === "warning" ? "var(--warning)" : "var(--success)"} />
           </div>
           <StatusCard {...userStats} />
-          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
             <div className="flex items-center justify-between mb-2">
               <div className="text-sm" style={{ color: "var(--text-muted)" }}>
                 ۳۰ روز اخیر (شمسی)
@@ -227,14 +223,14 @@ export default function App() {
             </div>
             <BarChart data={last30.map((d) => d.count)} labels={last30.map((d) => d.date.toLocaleDateString("fa-IR-u-ca-persian", { day: "numeric" }))} color="var(--chart-primary)" />
           </div>
-          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
             <div className="text-sm mb-2" style={{ color: "var(--text-muted)" }}>
               هدف هفتگی: حداکثر {goal} بار بازگشت
             </div>
             <ProgressRing progress={progress} label="پیشرفت شما" />
           </div>
           <Triggers />
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <Journal />
           </div>
           <div className="md:col-span-2">

@@ -47,6 +47,9 @@ export function addNote(text) {
   writeJson(KEYS.notes, notes);
   return note;
 }
+export function setNotes(notes) {
+  writeJson(KEYS.notes, notes);
+}
 
 export function getTriggers() {
   return readJson(KEYS.triggers, []);
