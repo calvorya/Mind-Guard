@@ -1,4 +1,3 @@
-
 <p align="center">
   <img src="https://raw.githubusercontent.com/calvorya/mind-guard/main/public/ico.png" alt="Mind Guard Logo" width="200"/>
 </p>
@@ -35,7 +34,7 @@
 ```bash
 git clone https://github.com/calvorya/mind-guard.git
 cd mind-guard
-````
+```
 
 2. Install dependencies:
 
@@ -61,21 +60,23 @@ npm run build
 
 This project uses GitHub Actions for continuous deployment to GitHub Pages.
 
-* The workflow automatically builds the project and deploys it to the `gh-pages` branch.
-
+- The workflow automatically builds the project and deploys it to the `gh-pages` branch.
 
 ## 🏅 Badge System
 
 Badges are awarded based on the user's progress and control:
 
-* **🧠 Clean Mind:** No activity detected.
-* **🔥 Willpower Master:** Minimal activity over a week.
-* **💪 Consistency:** Maintaining progress for 30 days.
-* **⚡ Excellent Control:** Ratio of activity to total days is very low.
-* **⭐ Balance:** Combination of streak and total count.
-* **🏆 Legendary Willpower:** Long-term streaks without any activity.
-* **👑 Mind Champion:** Consistent low activity over long periods.
+| Badge Name   | Condition                                     | Icon        | Description                       |
+| ------------ | --------------------------------------------- | ----------- | --------------------------------- |
+| پاک ذهن      | Total relapses = 0                            | 🧠 (Brain)  | You have a spotless mind!         |
+| ثبات اراده   | 7+ day streak, ≤1 relapse last 7 days         | 🔥 (Flame)  | Consistent willpower over a week. |
+| پشتکار       | 30+ days tracked, ≤5 relapses in last 30 days | 🛡️ (Shield) | Persistent and steady progress.   |
+| کنترل عالی   | Average relapses per day < 0.1                | ⚡ (Zap)    | Excellent self-control every day. |
+| تعادل        | 3+ day streak, total relapses ≤5              | ⭐ (Star)   | You are in balance and control.   |
+| اسطوره اراده | 30+ day streak, total relapses = 0            | 🏆 (Trophy) | Ultimate willpower—legendary!     |
+| قهرمان ذهن   | 100+ days tracked, total relapses ≤3          | 🧠 (Brain)  | A hero of mindset and endurance.  |
 
+- **Badges appear dynamically** as you meet the conditions. Your progress and badges motivate consistency and improvement!
 
 ## 🤝 Contributing
 
@@ -83,7 +84,6 @@ Badges are awarded based on the user's progress and control:
 2. Create a new branch for your feature or fix.
 3. Make your changes and commit them.
 4. Push to your branch and create a pull request.
-
 
 ## 📄 License
 
