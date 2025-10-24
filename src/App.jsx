@@ -10,8 +10,10 @@ import CounterCard from "./components/CounterCard.jsx";
 import ProgressRing from "./components/ProgressRing.jsx";
 import SettingsBar from "./components/SettingsBar.jsx";
 import Triggers from "./components/Triggers.jsx";
+import { getMotivation } from "./components/QuoteBanner.jsx";
 import { getEvents, addEvent, removeLastEvent } from "./storage.js";
 import { themeFromRecentCount } from "./theme.js";
+import { Resources } from "./components/Resources.jsx";
 
 const STORAGE_KEYS = {
   lastRelapse: "mindguard:lastRelapse",
@@ -35,16 +37,6 @@ function diffJalaliDays(fromDate, toDate) {
   const from = startOfUserDay(fromDate);
   const to = startOfUserDay(toDate);
   return Math.max(0, Math.floor((to - from) / (24 * 60 * 60 * 1000)));
-}
-
-function getMotivation(days) {
-  if (days < 1) return "هر شروع دوباره، آگاهی است. همین الان شروع کن.";
-  if (days < 3) return "بردهای کوچک، ارزشمندند. امروزت پاک باشه.";
-  if (days < 7) return "انرژی مثبت، آرام آرام ساخته می‌شود.";
-  if (days < 14) return "تو داری ثابت می‌کنی که توان انتخاب داری.";
-  if (days < 30) return "ثبات، از شدت مهم‌تره. هر روز ادامه بده.";
-  if (days < 60) return "تو داری ذهن و عادتت رو بازآموزی می‌کنی.";
-  return "خود آینده‌ات از این نظم و اراده تو قدردان خواهد بود.";
 }
 
 function getRecentJalaliDays(n) {
@@ -193,7 +185,7 @@ export default function App() {
           <div className="backdrop-blur-md rounded-xl px-6 py-3 shadow animate-fade-in-scale max-w-md w-full text-center">{motivation}</div>
         </div>
         <div className="mx-auto w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 animate-fade-in-up">
-          <StatsCard title="روزهای بدون بازگشت" value={daysClean} subtitle={`آخرین بازگشت: ${getJalaliDateString(lastRelapse)}`} />
+          <StatsCard title="روزهای بدون بازگشت" value={daysClean} subtitle={`آخرین بازگشت: ${getJalaliDateString(events.filter((e) => e.type === "relapse").sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0]?.timestamp)}`} />
           <CounterCard title="تعداد امروز" value={todayCount} />
           <StatsCard title="سری فعلی بدون بازگشت" value={currentStreak} />
           <StatsCard title="بهترین رکورد بدون بازگشت" value={bestStreak} />
@@ -230,6 +222,7 @@ export default function App() {
             <ProgressRing progress={progress} label="پیشرفت شما" />
           </div>
           <Triggers />
+          <Resources />
           <div className="md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
             <Journal />
           </div>

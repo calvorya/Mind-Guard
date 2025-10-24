@@ -1,8 +1,8 @@
 const KEYS = {
-  events: 'mindguard:events', // [{timestamp: ISO, type: 'masturbation'|'relapse'}]
-  notes: 'mindguard:notes',   // [{id, timestamp, text}]
-  triggers: 'mindguard:triggers', // [string]
-  settings: 'mindguard:settings', // {pinHash?, goal?, theme?}
+  events: "mindguard:events", // [{timestamp: ISO, type: 'masturbation'|'relapse'}]
+  notes: "mindguard:notes", // [{id, timestamp, text}]
+  triggers: "mindguard:triggers", // [string]
+  settings: "mindguard:settings", // {pinHash?, goal?, theme?}
 };
 
 function readJson(key, fallback) {
@@ -24,7 +24,16 @@ export function getEvents() {
 
 export function addEvent(event) {
   const events = getEvents();
-  events.push({ ...event, timestamp: event.timestamp ?? new Date().toISOString() });
+  const localTimestamp = new Date().toLocaleString("en-US", {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    hour12: false,
+  });
+
+  events.push({
+    ...event,
+    timestamp: event.timestamp ?? localTimestamp,
+  });
+
   writeJson(KEYS.events, events);
   return events;
 }
@@ -85,5 +94,3 @@ export function importAll(data) {
 }
 
 export const StorageKeys = KEYS;
-
-
