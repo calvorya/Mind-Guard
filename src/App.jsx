@@ -11,6 +11,7 @@ import ProgressRing from "./components/ProgressRing.jsx";
 import SettingsBar from "./components/SettingsBar.jsx";
 import Triggers from "./components/Triggers.jsx";
 import { getMotivation } from "./components/QuoteBanner.jsx";
+import { Loading } from "./components/Loading.jsx";
 import { getEvents, addEvent, removeLastEvent } from "./storage.js";
 import { themeFromRecentCount } from "./theme.js";
 import { Resources } from "./components/Resources.jsx";
@@ -93,7 +94,7 @@ function calcDaysClean(events, cleanStart) {
 export default function App() {
   const [lastRelapse, setLastRelapse] = useState(null);
   const [cleanStart, setCleanStart] = useState(null);
-  const [events, setEvents] = useState(() => getEvents());
+  const [events, setEvents] = useState(null);
   const [themeSource, setThemeSource] = useState(() => JSON.parse(localStorage.getItem("mindguard:settings") || "{}").themeSource || "system");
   const [dark, setDark] = useState(() => {
     const saved = JSON.parse(localStorage.getItem("mindguard:settings") || "{}");
@@ -107,7 +108,7 @@ export default function App() {
     document.documentElement.classList.toggle("dark", dark);
     const s = JSON.parse(localStorage.getItem("mindguard:settings") || "{}");
     localStorage.setItem("mindguard:settings", JSON.stringify({ ...s, darkMode: dark, themeSource }));
-  }, [dark]);
+  }, [dark, themeSource]);
 
   useEffect(() => {
     const mql = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
@@ -127,26 +128,30 @@ export default function App() {
   useEffect(() => {
     const storedLast = localStorage.getItem(STORAGE_KEYS.lastRelapse);
     const storedStart = localStorage.getItem(STORAGE_KEYS.cleanStart);
-    if (storedLast) setLastRelapse(storedLast);
-    if (storedStart) setCleanStart(storedStart);
-    if (!storedLast && !storedStart) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const iso = today.toISOString();
-      localStorage.setItem(STORAGE_KEYS.lastRelapse, iso);
-      localStorage.setItem(STORAGE_KEYS.cleanStart, iso);
-      setLastRelapse(iso);
-      setCleanStart(iso);
-    }
+
+    setTimeout(() => {
+      if (storedLast) setLastRelapse(storedLast);
+      if (storedStart) setCleanStart(storedStart);
+      if (!storedLast && !storedStart) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const iso = today.toISOString();
+        localStorage.setItem(STORAGE_KEYS.lastRelapse, iso);
+        localStorage.setItem(STORAGE_KEYS.cleanStart, iso);
+        setLastRelapse(iso);
+        setCleanStart(iso);
+      }
+      setEvents(getEvents());
+    }, 1050);
   }, []);
 
-  const daysClean = useMemo(() => calcDaysClean(events, cleanStart), [events, cleanStart]);
+  const daysClean = useMemo(() => calcDaysClean(events || [], cleanStart), [events, cleanStart]);
 
   const motivation = useMemo(() => getMotivation(daysClean), [daysClean]);
   const weekDays = useMemo(() => getRecentJalaliDays(7), []);
-  const last7 = useMemo(() => groupEventsByJalaliDay(events, weekDays), [events, weekDays]);
+  const last7 = useMemo(() => groupEventsByJalaliDay(events || [], weekDays), [events, weekDays]);
   const last30DaysJalali = useMemo(() => getRecentJalaliDays(30), []);
-  const last30 = useMemo(() => groupEventsByJalaliDay(events, last30DaysJalali), [events, last30DaysJalali]);
+  const last30 = useMemo(() => groupEventsByJalaliDay(events || [], last30DaysJalali), [events, last30DaysJalali]);
   const totalLast7 = useMemo(() => last7.reduce((sum, day) => sum + day.count, 0), [last7]);
   const totalLast30 = useMemo(() => last30.reduce((sum, day) => sum + day.count, 0), [last30]);
   const theme = useMemo(() => themeFromRecentCount(last7.reduce((s, d) => s + d.count, 0)), [last7]);
@@ -154,7 +159,7 @@ export default function App() {
   const [goal, setGoal] = useState(() => JSON.parse(localStorage.getItem("mindguard:settings") || "{}").goal || 7);
   const progress = Math.max(0, Math.min(1, 1 - last7.reduce((s, d) => s + d.count, 0) / goal));
   const { currentStreak, bestStreak } = useMemo(() => {
-    if (!events.length) {
+    if (!events?.length) {
       return { currentStreak: daysClean, bestStreak: daysClean };
     }
     const sorted = [...events].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -176,12 +181,12 @@ export default function App() {
   const userStats = useMemo(
     () => ({
       streak: currentStreak,
-      total: events.length,
+      total: events ? events.length : 0,
       totalLast7: totalLast7,
       totalLast30: totalLast30,
       days: daysClean,
     }),
-    [currentStreak, events.length, totalLast7, totalLast30, daysClean]
+    [currentStreak, events, totalLast7, totalLast30, daysClean]
   );
 
   const weekLabels = weekDays.map(getWeekdayNameFa);
@@ -196,66 +201,72 @@ export default function App() {
         }}
       />
       <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex justify-center mb-4">
-          <div className="backdrop-blur-md rounded-xl px-6 py-3 shadow animate-fade-in-scale max-w-md w-full text-center">{motivation}</div>
-        </div>
-        <div className="mx-auto w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 animate-fade-in-up">
-          <StatsCard title="روزهای بدون بازگشت" value={daysClean} subtitle={`آخرین بازگشت: ${getJalaliDateString(events.filter((e) => e.type === "relapse").sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0]?.timestamp)}`} />
-          <CounterCard title="تعداد امروز" value={todayCount} />
-          <StatsCard title="سری فعلی بدون بازگشت" value={currentStreak} />
-          <StatsCard title="بهترین رکورد بدون بازگشت" value={bestStreak} />
-          <div className="md:col-span-2">
-            <Actions onAdd={() => setEvents(addEvent({ type: "relapse" }))} onUndo={() => setEvents(removeLastEvent())} />
-          </div>
-          <div className="rounded-2xl shadow-sm ring-1 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
-            <div className="flex items-center justify-between">
-              <div className="text-sm" style={{ color: "var(--text-muted)" }}>
-                ۷ روز اخیر (شمسی)
+        {events === null ? (
+          <Loading />
+        ) : (
+          <>
+            <div className="flex justify-center mb-4">
+              <div className="backdrop-blur-md rounded-xl px-6 py-3 shadow animate-fade-in-scale max-w-md w-full text-center">{motivation}</div>
+            </div>
+            <div className="mx-auto w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 animate-fade-in-up">
+              <StatsCard title="روزهای بدون بازگشت" value={daysClean} subtitle={`آخرین بازگشت: ${getJalaliDateString(events.filter((e) => e.type === "relapse").sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0]?.timestamp)}`} />
+              <CounterCard title="تعداد امروز" value={todayCount} />
+              <StatsCard title="سری فعلی بدون بازگشت" value={currentStreak} />
+              <StatsCard title="بهترین رکورد بدون بازگشت" value={bestStreak} />
+              <div className="md:col-span-2">
+                <Actions onAdd={() => setEvents(addEvent({ type: "relapse" }))} onUndo={() => setEvents(removeLastEvent())} />
               </div>
-              <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                مجموع: {totalLast7} بار
+              <div className="rounded-2xl shadow-sm ring-1 p-5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    ۷ روز اخیر (شمسی)
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    مجموع: {totalLast7} بار
+                  </div>
+                </div>
+                <BarChart data={last7.map((d) => d.count)} labels={weekLabels} color={theme.name === "danger" ? "var(--danger)" : theme.name === "warning" ? "var(--warning)" : "var(--success)"} />
+              </div>
+              <StatusCard {...userStats} />
+              <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    ۳۰ روز اخیر (شمسی)
+                  </div>
+                  <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                    مجموع: {totalLast30} بار
+                  </div>
+                </div>
+                <BarChart data={last30.map((d) => d.count)} labels={last30.map((d) => formatJalaliDate(d.date))} color="var(--chart-primary)" />
+              </div>
+              <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
+                <div className="text-sm mb-2" style={{ color: "var(--text-muted)" }}>
+                  هدف هفتگی: حداکثر {goal} بار بازگشت
+                </div>
+                <ProgressRing progress={progress} label="پیشرفت شما" />
+              </div>
+              <Triggers />
+              <Resources />
+              <div className="md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <Journal />
+              </div>
+              <div className="md:col-span-2">
+                <SettingsBar
+                  goal={goal}
+                  onGoalChange={(g) => {
+                    setGoal(g);
+                    localStorage.setItem("mindguard:settings", JSON.stringify({ ...JSON.parse(localStorage.getItem("mindguard:settings") || "{}"), goal: g }));
+                  }}
+                />
               </div>
             </div>
-            <BarChart data={last7.map((d) => d.count)} labels={weekLabels} color={theme.name === "danger" ? "var(--danger)" : theme.name === "warning" ? "var(--warning)" : "var(--success)"} />
-          </div>
-          <StatusCard {...userStats} />
-          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm" style={{ color: "var(--text-muted)" }}>
-                ۳۰ روز اخیر (شمسی)
-              </div>
-              <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
-                مجموع: {totalLast30} بار
-              </div>
+            <div className="mt-6 text-center">
+              <p className="text-xs transition-colors duration-200" style={{ color: "var(--text-muted)" }}>
+                تمام اطلاعات فقط در مرورگر شما ذخیره می‌شود.
+              </p>
             </div>
-            <BarChart data={last30.map((d) => d.count)} labels={last30.map((d) => formatJalaliDate(d.date))} color="var(--chart-primary)" />
-          </div>
-          <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
-            <div className="text-sm mb-2" style={{ color: "var(--text-muted)" }}>
-              هدف هفتگی: حداکثر {goal} بار بازگشت
-            </div>
-            <ProgressRing progress={progress} label="پیشرفت شما" />
-          </div>
-          <Triggers />
-          <Resources />
-          <div className="md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-            <Journal />
-          </div>
-          <div className="md:col-span-2">
-            <SettingsBar
-              goal={goal}
-              onGoalChange={(g) => {
-                setGoal(g);
-                localStorage.setItem("mindguard:settings", JSON.stringify({ ...JSON.parse(localStorage.getItem("mindguard:settings") || "{}"), goal: g }));
-              }}
-            />
-          </div>
-        </div>
-        <div className="mt-6 text-center">
-          <p className="text-xs transition-colors duration-200" style={{ color: "var(--text-muted)" }}>
-            تمام اطلاعات فقط در مرورگر شما ذخیره می‌شود.
-          </p>
-        </div>
+          </>
+        )}
       </main>
       <Footer />
     </div>
