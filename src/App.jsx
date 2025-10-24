@@ -24,12 +24,12 @@ function getJalaliDateString(dateLike) {
   if (!dateLike) return "—";
   const d = typeof dateLike === "string" ? new Date(dateLike) : dateLike;
   if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("fa-IR-u-ca-persian", { year: "numeric", month: "short", day: "numeric" });
+  return formatJalaliDate(d);
 }
 
 function startOfUserDay(date) {
   const d = new Date(date);
-  d.setHours(12, 0, 0, 0);
+  d.setHours(4, 0, 0, 0);
   return d;
 }
 
@@ -44,11 +44,26 @@ function getRecentJalaliDays(n) {
   const today = new Date();
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date(today);
-    d.setHours(12, 0, 0, 0);
+    d.setHours(4, 0, 0, 0);
     d.setDate(d.getDate() - i);
     arr.push(new Date(d));
   }
   return arr;
+}
+function formatJalaliDate(date) {
+  if (!date) return "—";
+
+  let d = date instanceof Date ? new Date(date) : new Date(date);
+
+  if (isNaN(d)) return "—";
+
+  d = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  return d.toLocaleDateString("fa-IR-u-ca-persian", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function groupEventsByJalaliDay(events, days) {
@@ -116,7 +131,7 @@ export default function App() {
     if (storedStart) setCleanStart(storedStart);
     if (!storedLast && !storedStart) {
       const today = new Date();
-      today.setHours(12, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
       const iso = today.toISOString();
       localStorage.setItem(STORAGE_KEYS.lastRelapse, iso);
       localStorage.setItem(STORAGE_KEYS.cleanStart, iso);
@@ -213,7 +228,7 @@ export default function App() {
                 مجموع: {totalLast30} بار
               </div>
             </div>
-            <BarChart data={last30.map((d) => d.count)} labels={last30.map((d) => d.date.toLocaleDateString("fa-IR-u-ca-persian", { day: "numeric" }))} color="var(--chart-primary)" />
+            <BarChart data={last30.map((d) => d.count)} labels={last30.map((d) => formatJalaliDate(d.date))} color="var(--chart-primary)" />
           </div>
           <div className="rounded-2xl shadow-sm ring-1 p-5 md:col-span-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1" style={{ backgroundColor: "var(--surface)", borderColor: "var(--ring)" }}>
             <div className="text-sm mb-2" style={{ color: "var(--text-muted)" }}>
